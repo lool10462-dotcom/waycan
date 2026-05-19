@@ -3,29 +3,16 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { 
-  LayoutDashboard, Users, FileText, MessageCircle, BarChart3, Settings, 
-  Shield, TrendingUp, Eye, DollarSign, AlertTriangle, CheckCircle, 
-  XCircle, Search, Filter, MoreVertical, Trash2, Edit, Eye as ViewEye,
-  RefreshCw, Download, Bell, LogOut, ChevronLeft, Menu, X, ShieldCheck,
-  Phone, Mail, MapPin, Clock, Star, ToggleLeft, ToggleRight
+  FileText, Users, Eye, DollarSign, AlertTriangle, CheckCircle, 
+  Clock, MoreVertical, Trash2, Edit, RefreshCw, Download, 
+  MapPin, Star, ShieldCheck, Mail, XCircle, BarChart3
 } from 'lucide-react'
-
-const adminNav = [
-  { icon: LayoutDashboard, label: 'Dashboard', href: '/admin/dashboard', active: true },
-  { icon: FileText, label: 'Annonces', href: '/admin/dashboard/annonces', active: false },
-  { icon: Users, label: 'Utilisateurs', href: '/admin/dashboard/utilisateurs', active: false },
-  { icon: MessageCircle, label: 'Messages', href: '/admin/dashboard/messages', active: false },
-  { icon: BarChart3, label: 'Statistiques', href: '/admin/dashboard/statistiques', active: false },
-  { icon: DollarSign, label: 'Abonnements', href: '/admin/dashboard/abonnements', active: false },
-  { icon: Shield, label: 'Modération', href: '/admin/dashboard/moderation', active: false },
-  { icon: Settings, label: 'Paramètres', href: '/admin/dashboard/settings', active: false },
-]
 
 const stats = [
   { label: 'Annonces actives', value: '15,234', change: '+12%', icon: FileText, color: 'bg-primary' },
   { label: 'Utilisateurs', value: '52,847', change: '+8%', icon: Users, color: 'bg-secondary' },
   { label: 'Vues aujourd\'hui', value: '8,942', change: '+23%', icon: Eye, color: 'bg-accent' },
-  { label: 'Revenus mois', value: '2.4M FDJ', change: '+15%', icon: DollarSign, color: 'bg-success' },
+  { label: 'Revenus mois', value: '2.4M FDJ', change: '+15%', icon: DollarSign, color: 'bg-green-600' },
 ]
 
 const recentAds = [
@@ -48,336 +35,260 @@ const flaggedAds = [
 ]
 
 export default function AdminDashboard() {
-  const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
-
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'active': return <span className="flex items-center gap-1 text-success"><CheckCircle className="w-4 h-4" /> Active</span>
-      case 'pending': return <span className="flex items-center gap-1 text-premium-gold"><Clock className="w-4 h-4" /> En attente</span>
-      case 'flagged': return <span className="flex items-center gap-1 text-alert"><AlertTriangle className="w-4 h-4" /> Signalée</span>
+      case 'active': return <span className="flex items-center gap-1 text-green-600 text-xs font-semibold bg-green-50 px-2 py-1 rounded-full"><CheckCircle className="w-3.5 h-3.5" /> Active</span>
+      case 'pending': return <span className="flex items-center gap-1 text-yellow-600 text-xs font-semibold bg-yellow-50 px-2 py-1 rounded-full"><Clock className="w-3.5 h-3.5" /> En attente</span>
+      case 'flagged': return <span className="flex items-center gap-1 text-red-600 text-xs font-semibold bg-red-50 px-2 py-1 rounded-full"><AlertTriangle className="w-3.5 h-3.5" /> Signalée</span>
       default: return status
     }
   }
 
   return (
-    <div className="min-h-screen bg-neutral flex">
-      <aside className={`${sidebarOpen ? 'w-64' : 'w-20'} bg-primary text-white transition-all duration-300 fixed lg:relative z-30 h-screen`}>
-        <div className="p-4 flex items-center justify-between border-b border-white/10">
-          {sidebarOpen && (
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-                <span className="text-primary font-bold text-xl">W</span>
-              </div>
-              <span className="font-bold text-xl">WAYCAN</span>
-            </div>
-          )}
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 hover:bg-white/10 rounded">
-            {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-        </div>
+    <div className="space-y-8 animate-fade-in">
+      {/* Welcome Message */}
+      <div>
+        <h1 className="text-3xl font-extrabold text-text-main">Tableau de bord administrateur</h1>
+        <p className="text-text-muted mt-1">Consultez les statistiques générales et gérez l'activité en temps réel de WAYCAN.</p>
+      </div>
 
-        <nav className="p-4 space-y-2">
-          {adminNav.map((item, index) => (
-            <Link
-              key={index}
-              href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                item.active ? 'bg-white/20' : 'hover:bg-white/10'
-              }`}
-            >
-              <item.icon className="w-5 h-5 flex-shrink-0" />
-              {sidebarOpen && <span>{item.label}</span>}
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat, index) => (
+          <div key={index} className="bg-white rounded-2xl p-6 border border-gray-200/80 shadow-sm hover:shadow-md transition-all duration-300">
+            <div className="flex items-center justify-between mb-4">
+              <div className={`w-12 h-12 ${stat.color} rounded-2xl flex items-center justify-center shadow-md shadow-black/5`}>
+                <stat.icon className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-green-600 bg-green-50 px-2 py-1 rounded-full text-xs font-bold">{stat.change}</span>
+            </div>
+            <p className="text-3xl font-black text-text-main">{stat.value}</p>
+            <p className="text-text-muted text-sm font-medium mt-1">{stat.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Main Grid: Ads and Moderation */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Ads Card */}
+        <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden flex flex-col">
+          <div className="flex items-center justify-between p-6 border-b">
+            <h2 className="font-bold text-text-main flex items-center gap-2 text-lg">
+              <FileText className="w-5 h-5 text-primary" />
+              Dernières annonces publiées
+            </h2>
+            <Link href="/admin/dashboard/annonces" className="text-sm font-bold text-accent hover:underline">
+              Gérer tout →
             </Link>
-          ))}
-        </nav>
-
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10">
-          <Link href="/" className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition-colors text-white/70">
-            <LogOut className="w-5 h-5" />
-            {sidebarOpen && <span>Déconnexion</span>}
-          </Link>
-        </div>
-      </aside>
-
-      <main className="flex-1 p-6 lg:p-8">
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-text-main">Dashboard Administrateur</h1>
-            <p className="text-text-muted">Bienvenue sur le panneau de contrôle WAYCAN</p>
           </div>
-
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Rechercher..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary w-64"
-              />
-            </div>
-            <button className="relative p-2 border rounded-lg hover:bg-gray-50">
-              <Bell className="w-5 h-5 text-text-muted" />
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-alert text-white text-xs rounded-full flex items-center justify-center">3</span>
-            </button>
-            <div className="flex items-center gap-3 p-2 bg-surface rounded-lg border">
-              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">
-                A
-              </div>
-              <div>
-                <p className="font-medium text-sm">Admin Principal</p>
-                <p className="text-xs text-text-muted">超级管理员</p>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat, index) => (
-            <div key={index} className="bg-surface rounded-xl p-6 border">
-              <div className="flex items-center justify-between mb-4">
-                <div className={`w-12 h-12 ${stat.color} rounded-xl flex items-center justify-center`}>
-                  <stat.icon className="w-6 h-6 text-white" />
+          <div className="divide-y divide-gray-100 flex-1 overflow-y-auto">
+            {recentAds.map((ad) => (
+              <div key={ad.id} className="p-4 flex items-center justify-between hover:bg-neutral/30 transition-colors">
+                <div className="flex-1 min-w-0 pr-4">
+                  <div className="flex items-center gap-2">
+                    <p className="font-bold text-text-main truncate text-sm">{ad.title}</p>
+                    {ad.premium && <Star className="w-4 h-4 text-yellow-500 fill-yellow-500 flex-shrink-0" />}
+                  </div>
+                  <div className="flex items-center gap-4 text-xs text-text-muted mt-1.5">
+                    <span className="font-semibold text-accent">{ad.price}</span>
+                    <span>•</span>
+                    <span className="flex items-center gap-1"><Eye className="w-3.5 h-3.5" /> {ad.views} vues</span>
+                    <span>•</span>
+                    <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {ad.location}</span>
+                  </div>
                 </div>
-                <span className="text-success text-sm font-medium">{stat.change}</span>
-              </div>
-              <p className="text-2xl font-bold text-text-main">{stat.value}</p>
-              <p className="text-text-muted text-sm">{stat.label}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <div className="bg-surface rounded-xl border overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b">
-              <h2 className="font-semibold text-text-main flex items-center gap-2">
-                <FileText className="w-5 h-5 text-primary" />
-                Dernières annonces
-              </h2>
-              <Link href="/admin/dashboard/annonces" className="text-sm text-primary hover:underline">
-                Voir tout →
-              </Link>
-            </div>
-            <div className="divide-y">
-              {recentAds.map((ad) => (
-                <div key={ad.id} className="p-4 flex items-center justify-between hover:bg-neutral/50">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium text-text-main truncate">{ad.title}</p>
-                      {ad.premium && <Star className="w-4 h-4 text-premium-gold fill-premium-gold flex-shrink-0" />}
-                    </div>
-                    <div className="flex items-center gap-4 text-sm text-text-muted mt-1">
-                      <span>{ad.price}</span>
-                      <span>•</span>
-                      <span className="flex items-center gap-1"><Eye className="w-3 h-3" /> {ad.views}</span>
-                      <span>•</span>
-                      <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {ad.location}</span>
+                <div className="flex items-center gap-3">
+                  {getStatusBadge(ad.status)}
+                  <div className="relative group">
+                    <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                      <MoreVertical className="w-4 h-4 text-text-muted" />
+                    </button>
+                    <div className="absolute right-0 top-full mt-1 bg-white border border-gray-100 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 min-w-[140px] p-1.5">
+                      <Link href="/admin/dashboard/annonces" className="w-full px-3 py-2 text-left text-xs hover:bg-neutral rounded-lg flex items-center gap-2 font-medium text-text-main">
+                        <Eye className="w-4 h-4 text-gray-500" /> Voir
+                      </Link>
+                      <button className="w-full px-3 py-2 text-left text-xs hover:bg-neutral rounded-lg flex items-center gap-2 font-medium text-text-main">
+                        <Edit className="w-4 h-4 text-gray-500" /> Modifier
+                      </button>
+                      <button className="w-full px-3 py-2 text-left text-xs text-red-600 hover:bg-red-50 rounded-lg flex items-center gap-2 font-medium">
+                        <Trash2 className="w-4 h-4" /> Supprimer
+                      </button>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 ml-4">
-                    {getStatusBadge(ad.status)}
-                    <div className="relative group">
-                      <button className="p-2 hover:bg-gray-100 rounded">
-                        <MoreVertical className="w-4 h-4 text-text-muted" />
-                      </button>
-                      <div className="absolute right-0 top-full mt-1 bg-surface border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 min-w-[120px]">
-                        <button className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2">
-                          <ViewEye className="w-4 h-4" /> Voir
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Flagged Ads Card */}
+        <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden flex flex-col">
+          <div className="flex items-center justify-between p-6 border-b">
+            <h2 className="font-bold text-text-main flex items-center gap-2 text-lg">
+              <AlertTriangle className="w-5 h-5 text-red-500 animate-pulse" />
+              Annonces signalées
+            </h2>
+            <Link href="/admin/dashboard/moderation" className="text-sm font-bold text-red-500 hover:underline">
+              Modérer tout →
+            </Link>
+          </div>
+          <div className="divide-y divide-gray-100 flex-1 overflow-y-auto">
+            {flaggedAds.map((ad) => (
+              <div key={ad.id} className="p-4 flex items-center justify-between hover:bg-neutral/30 transition-colors">
+                <div className="flex-1 min-w-0 pr-4">
+                  <p className="font-bold text-text-main text-sm">{ad.title}</p>
+                  <p className="text-xs text-red-600 font-medium bg-red-50 border border-red-100 rounded-lg p-2 mt-1.5">{ad.reason}</p>
+                  <div className="flex items-center gap-4 text-xs text-text-muted mt-2">
+                    <span>Signalé par : <strong className="text-text-main">{ad.reporter}</strong></span>
+                    <span>•</span>
+                    <span>{ad.date}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <button className="px-3.5 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-green-600/10">
+                    Valider
+                  </button>
+                  <button className="px-3.5 py-2 border border-red-200 text-red-600 hover:bg-red-50 text-xs font-bold rounded-xl transition-all">
+                    Rejeter
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Row 3: Users and Quick stats */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* New Users Table */}
+        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden flex flex-col">
+          <div className="flex items-center justify-between p-6 border-b">
+            <h2 className="font-bold text-text-main flex items-center gap-2 text-lg">
+              <Users className="w-5 h-5 text-secondary" />
+              Nouveaux utilisateurs
+            </h2>
+            <button className="text-xs font-bold text-accent hover:underline flex items-center gap-1.5">
+              <RefreshCw className="w-3.5 h-3.5" /> Actualiser
+            </button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-neutral/50 border-b border-gray-100">
+                <tr>
+                  <th className="px-6 py-4 text-left text-xs font-extrabold text-text-muted uppercase tracking-wider">Utilisateur</th>
+                  <th className="px-6 py-4 text-left text-xs font-extrabold text-text-muted uppercase tracking-wider">Contact</th>
+                  <th className="px-6 py-4 text-left text-xs font-extrabold text-text-muted uppercase tracking-wider">Statut</th>
+                  <th className="px-6 py-4 text-left text-xs font-extrabold text-text-muted uppercase tracking-wider">Annonces</th>
+                  <th className="px-6 py-4 text-center text-xs font-extrabold text-text-muted uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {recentUsers.map((user) => (
+                  <tr key={user.id} className="hover:bg-neutral/30 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary font-bold text-base border border-primary/20">
+                          {user.name.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="font-bold text-text-main text-sm">{user.name}</p>
+                          <p className="text-[10px] text-text-muted font-medium">Inscrit {user.joined}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <p className="text-xs font-semibold text-text-main">{user.email}</p>
+                      <p className="text-[10px] text-text-muted mt-0.5">{user.phone}</p>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {user.verified ? (
+                        <span className="inline-flex items-center gap-1 text-green-600 bg-green-50 px-2 py-0.5 rounded-full text-xs font-bold border border-green-100">
+                          <ShieldCheck className="w-3.5 h-3.5" /> Vérifié
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded-full text-xs font-bold border border-yellow-100">
+                          <Clock className="w-3.5 h-3.5" /> Attente
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <span className="text-text-main font-bold bg-neutral px-2.5 py-1 rounded-lg border border-gray-100 text-xs">{user.ads}</span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center justify-center gap-1.5">
+                        <button className="p-1.5 hover:bg-neutral hover:text-accent rounded-lg text-gray-500 transition-colors" title="Voir le profil">
+                          <Eye className="w-4 h-4" />
                         </button>
-                        <button className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2">
-                          <Edit className="w-4 h-4" /> Modifier
+                        <button className="p-1.5 hover:bg-neutral hover:text-primary rounded-lg text-gray-500 transition-colors" title="Envoyer un email">
+                          <Mail className="w-4 h-4" />
                         </button>
-                        <button className="w-full px-4 py-2 text-left text-sm text-alert hover:bg-red-50 flex items-center gap-2">
-                          <Trash2 className="w-4 h-4" /> Supprimer
+                        <button className="p-1.5 hover:bg-red-50 text-red-500 hover:text-red-600 rounded-lg transition-colors" title="Suspendre">
+                          <XCircle className="w-4 h-4" />
                         </button>
                       </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-surface rounded-xl border overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b">
-              <h2 className="font-semibold text-text-main flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5 text-alert" />
-                Annonces signalées
-              </h2>
-              <Link href="/admin/dashboard/moderation" className="text-sm text-primary hover:underline">
-                Voir tout →
-              </Link>
-            </div>
-            <div className="divide-y">
-              {flaggedAds.map((ad) => (
-                <div key={ad.id} className="p-4 flex items-center justify-between hover:bg-neutral/50">
-                  <div className="flex-1">
-                    <p className="font-medium text-text-main">{ad.title}</p>
-                    <p className="text-sm text-text-muted mt-1">{ad.reason}</p>
-                    <div className="flex items-center gap-4 text-xs text-text-muted mt-1">
-                      <span>Signalé par: {ad.reporter}</span>
-                      <span>•</span>
-                      <span>{ad.date}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 ml-4">
-                    <button className="px-3 py-1.5 bg-success text-white text-sm rounded-lg hover:bg-green-600">
-                      valider
-                    </button>
-                    <button className="px-3 py-1.5 border border-alert text-alert text-sm rounded-lg hover:bg-red-50">
-                      Rejeter
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 bg-surface rounded-xl border overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b">
-              <h2 className="font-semibold text-text-main flex items-center gap-2">
-                <Users className="w-5 h-5 text-secondary" />
-                Nouveaux utilisateurs
-              </h2>
-              <button className="text-sm text-primary hover:underline flex items-center gap-1">
-                <RefreshCw className="w-4 h-4" /> Actualiser
-              </button>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-neutral">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-text-muted">Utilisateur</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-text-muted">Contact</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-text-muted">Statut</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-text-muted">Annonces</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-text-muted">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {recentUsers.map((user) => (
-                    <tr key={user.id} className="hover:bg-neutral/50">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-medium">
-                            {user.name.charAt(0)}
-                          </div>
-                          <div>
-                            <p className="font-medium text-text-main">{user.name}</p>
-                            <p className="text-sm text-text-muted">Inscrit {user.joined}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <p className="text-sm text-text-main">{user.email}</p>
-                        <p className="text-xs text-text-muted">{user.phone}</p>
-                      </td>
-                      <td className="px-6 py-4">
-                        {user.verified ? (
-                          <span className="flex items-center gap-1 text-success text-sm">
-                            <ShieldCheck className="w-4 h-4" /> Vérifié
-                          </span>
-                        ) : (
-                          <span className="flex items-center gap-1 text-text-muted text-sm">
-                            <Clock className="w-4 h-4" /> En attente
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="text-text-main font-medium">{user.ads}</span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <button className="p-2 hover:bg-gray-100 rounded" title="Voir le profil">
-                            <ViewEye className="w-4 h-4 text-text-muted" />
-                          </button>
-                          <button className="p-2 hover:bg-gray-100 rounded" title="Envoyer un email">
-                            <Mail className="w-4 h-4 text-text-muted" />
-                          </button>
-                          <button className="p-2 hover:bg-red-50 rounded" title="Suspendre">
-                            <XCircle className="w-4 h-4 text-alert" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="bg-surface rounded-xl border p-6">
-            <h2 className="font-semibold text-text-main mb-6 flex items-center gap-2">
+        {/* Quick Stats Chart mockup */}
+        <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6 flex flex-col justify-between">
+          <div>
+            <h2 className="font-bold text-text-main mb-6 flex items-center gap-2 text-lg">
               <BarChart3 className="w-5 h-5 text-accent" />
               Statistiques rapides
             </h2>
-            <div className="space-y-6">
+            <div className="space-y-5">
               <div>
-                <div className="flex justify-between text-sm mb-2">
+                <div className="flex justify-between text-xs font-semibold mb-2">
                   <span className="text-text-muted">Annonces Publiées</span>
-                  <span className="font-medium text-text-main">15,234</span>
+                  <span className="text-text-main">15,234</span>
                 </div>
                 <div className="h-2 bg-neutral rounded-full overflow-hidden">
                   <div className="h-full bg-primary rounded-full" style={{ width: '85%' }} />
                 </div>
               </div>
               <div>
-                <div className="flex justify-between text-sm mb-2">
+                <div className="flex justify-between text-xs font-semibold mb-2">
                   <span className="text-text-muted">Utilisateurs actifs</span>
-                  <span className="font-medium text-text-main">42,891</span>
+                  <span className="text-text-main">42,891</span>
                 </div>
                 <div className="h-2 bg-neutral rounded-full overflow-hidden">
                   <div className="h-full bg-secondary rounded-full" style={{ width: '72%' }} />
                 </div>
               </div>
               <div>
-                <div className="flex justify-between text-sm mb-2">
+                <div className="flex justify-between text-xs font-semibold mb-2">
                   <span className="text-text-muted">Taux de conversion</span>
-                  <span className="font-medium text-text-main">8.2%</span>
+                  <span className="text-text-main">8.2%</span>
                 </div>
                 <div className="h-2 bg-neutral rounded-full overflow-hidden">
-                  <div className="h-full bg-success rounded-full" style={{ width: '42%' }} />
+                  <div className="h-full bg-green-600 rounded-full" style={{ width: '42%' }} />
                 </div>
               </div>
               <div>
-                <div className="flex justify-between text-sm mb-2">
-                  <span className="text-text-muted">Annonces Premium</span>
-                  <span className="font-medium text-text-main">3,421</span>
+                <div className="flex justify-between text-xs font-semibold mb-2">
+                  <span className="text-text-muted">VIP / Premium</span>
+                  <span className="text-text-main">3,421</span>
                 </div>
                 <div className="h-2 bg-neutral rounded-full overflow-hidden">
                   <div className="h-full bg-accent rounded-full" style={{ width: '22%' }} />
                 </div>
               </div>
             </div>
+          </div>
 
-            <div className="mt-6 pt-6 border-t">
-              <button className="w-full btn-secondary flex items-center justify-center gap-2">
-                <Download className="w-4 h-4" />
-                Exporter le rapport
-              </button>
-            </div>
+          <div className="mt-6 pt-6 border-t border-gray-100">
+            <button className="w-full py-3.5 bg-neutral hover:bg-gray-100 text-text-main border border-gray-200 text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-2">
+              <Download className="w-4 h-4" />
+              Exporter le rapport
+            </button>
           </div>
         </div>
-
-        <div className="mt-8 bg-gradient-to-r from-primary to-secondary rounded-xl p-6 text-white">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div>
-              <h3 className="text-lg font-semibold mb-1">Maintenance système</h3>
-              <p className="text-white/80 text-sm">Dernière sauvegarde: Il y a 2 minutes</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-lg text-sm">
-                <CheckCircle className="w-4 h-4" />
-                Tous les systèmes opérationnels
-              </span>
-            </div>
-          </div>
-        </div>
-      </main>
+      </div>
     </div>
   )
 }
