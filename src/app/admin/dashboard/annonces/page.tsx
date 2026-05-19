@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { 
   FileText, Search, Filter, CheckCircle, Clock, AlertTriangle, 
-  Trash2, Star, Eye, MapPin, RefreshCw, EyeOff
+  Trash2, Star, Eye, MapPin, RefreshCw, EyeOff, Camera
 } from 'lucide-react'
 
 interface Ad {
