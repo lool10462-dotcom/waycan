@@ -17,6 +17,11 @@ export interface UploadResult {
  */
 export async function uploadImage(file: File, bucketName: string = 'ads-images'): Promise<UploadResult> {
   try {
+    // 0. Vérifier que Supabase est configuré
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder')) {
+      return { error: "La connexion Supabase n'est pas configurée. Vérifiez vos variables d'environnement." };
+    }
+
     // 1. Validation : Type de fichier (Antibug)
     if (!ACCEPTED_MEDIA_TYPES.includes(file.type)) {
       return { error: "Format non supporté. Veuillez utiliser JPG, PNG, WEBP, MP4 ou WEBM." };
@@ -42,7 +47,19 @@ export async function uploadImage(file: File, bucketName: string = 'ads-images')
 
     if (error) {
       console.error("Erreur d'upload Supabase:", error);
-      return { error: "Une erreur est survenue lors de l'upload vers le serveur." };
+      
+      // Messages d'erreur spécifiques selon le type d'erreur
+      if (error.message?.includes('Bucket not found') || error.message?.includes('not found')) {
+        return { error: `Le bucket de stockage "${bucketName}" n'existe pas. Créez-le dans votre dashboard Supabase (Storage > New Bucket > "${bucketName}" > Public).` };
+      }
+      if (error.message?.includes('security') || error.message?.includes('policy') || error.message?.includes('row-level security') || error.message?.includes('Unauthorized') || error.message?.includes('403')) {
+        return { error: "Accès refusé. Les politiques de sécurité du bucket empêchent l'upload. Vérifiez les policies RLS dans Supabase Storage." };
+      }
+      if (error.message?.includes('exceeded') || error.message?.includes('limit')) {
+        return { error: "Limite de stockage dépassée sur Supabase." };
+      }
+      
+      return { error: `Erreur upload: ${error.message}` };
     }
 
     // 5. Récupération de l'URL publique
@@ -54,6 +71,7 @@ export async function uploadImage(file: File, bucketName: string = 'ads-images')
 
   } catch (err: any) {
     console.error("Exception in uploadImage:", err);
-    return { error: "Erreur réseau inattendue. Veuillez vérifier votre connexion." };
+    return { error: `Erreur réseau: ${err.message || 'Vérifiez votre connexion.'}` };
   }
 }
+
