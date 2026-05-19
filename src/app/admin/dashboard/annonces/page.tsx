@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { 
   FileText, Search, Filter, CheckCircle, Clock, AlertTriangle, 
-  Trash2, Star, Eye, MapPin, RefreshCw, EyeOff, Camera
+  Trash2, Star, Eye, MapPin, RefreshCw, EyeOff, ImageIcon
 } from 'lucide-react'
 
 interface Ad {
@@ -239,7 +239,7 @@ export default function AdminAnnonces() {
                             {mainImg ? (
                               <img src={mainImg} alt={ad.title} className="w-full h-full object-cover" />
                             ) : (
-                              <Camera className="w-6 h-6 text-gray-400" />
+                              <ImageIcon className="w-6 h-6 text-gray-400" />
                             )}
                           </div>
                           <div className="min-w-0">

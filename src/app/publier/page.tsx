@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { 
-  ChevronLeft, ChevronRight, Camera, Upload, Check, Car, Home, Briefcase, 
+  ChevronLeft, ChevronRight, ImageIcon, Upload, Check, Car, Home, Briefcase, 
   Smartphone, Sofa, Wrench, Loader2, Brain, Sparkles, CheckCircle2, 
   ShieldCheck, Heart, Share2, MapPin, Clock, Phone, Eye 
 } from 'lucide-react'
@@ -391,7 +391,7 @@ export default function PublishPage() {
                     />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 p-6 bg-gray-50">
-                      <Camera className="w-12 h-12 mb-2 stroke-[1.5]" />
+                      <ImageIcon className="w-12 h-12 mb-2 stroke-[1.5]" />
                       <p className="text-sm font-medium">Aucune photo sélectionnée</p>
                       <button onClick={() => setCurrentStep(3)} className="text-xs text-accent underline mt-1">Ajouter une photo</button>
                     </div>
@@ -508,7 +508,7 @@ export default function PublishPage() {
                   <img src={mainImage} alt={formData.title} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-400 bg-neutral">
-                    <Camera className="w-6 h-6" />
+                    <ImageIcon className="w-6 h-6" />
                   </div>
                 )}
               </div>

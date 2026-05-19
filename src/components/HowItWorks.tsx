@@ -1,9 +1,9 @@
 import Link from 'next/link'
-import { Camera, Edit3, Rocket } from 'lucide-react'
+import { ImageIcon, Edit3, Rocket } from 'lucide-react'
 
 const steps = [
   {
-    icon: Camera,
+    icon: ImageIcon,
     title: 'Prenez une photo',
     description: 'Photographiez votre article dans un endroit bien éclairé pour attirer plus d\'acheteurs',
     color: 'bg-accent',

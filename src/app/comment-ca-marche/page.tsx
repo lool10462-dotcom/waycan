@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { Camera, Edit3, Rocket, Search, MessageCircle, ShieldCheck, Star, ArrowRight, CheckCircle } from 'lucide-react'
+import { ImageIcon, Edit3, Rocket, Search, MessageCircle, ShieldCheck, Star, ArrowRight, CheckCircle } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Comment ça marche - Guide complet | WAYCAN',
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 const sellSteps = [
   {
-    icon: Camera,
+    icon: ImageIcon,
     title: '1. Prenez des photos',
     description: ' Photographiez votre article sous un bon éclairage. Les photos de qualité attirent plus d\'acheteurs.',
     tips: ['Utilisez la lumière naturelle', 'Faites plusieurs angles', 'Nettoyez le produit avant'],
