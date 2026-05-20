@@ -283,7 +283,7 @@ export default function PublishPage() {
                   className="input-field w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent min-h-[200px]"
                 />
                 <p className="text-sm text-text-muted mt-1">
-                  {formData.description.trim() ? formData.description.trim().split(/\s+/).filter(w => w.length > 0).length : 0}/700 mots (min. 10 mots)
+                  {formData.description.trim() ? formData.description.trim().split(/\s+/).filter(w => w.length > 0).length : 0}/700 mots
                 </p>
               </div>
             </div>
@@ -622,7 +622,7 @@ export default function PublishPage() {
                 onClick={handleNext}
                 disabled={
                   (currentStep === 1 && !selectedCategory) ||
-                  (currentStep === 2 && (!formData.title || (formData.description.trim().split(/\s+/).filter(w => w.length > 0).length < 10)))
+                  (currentStep === 2 && !formData.title)
                 }
                 className="btn-primary inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white font-semibold px-6 py-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
