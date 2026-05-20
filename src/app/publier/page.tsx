@@ -533,6 +533,23 @@ export default function PublishPage() {
               </div>
             </div>
 
+            {/* Premium Upsell - Smart & Non-intrusive */}
+            <div className="bg-gradient-to-r from-accent/10 to-accent/5 rounded-2xl p-4 border border-accent/20 flex flex-col sm:flex-row items-center gap-4 text-left mt-4 mb-2">
+              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
+                <Sparkles className="w-6 h-6 text-accent" />
+              </div>
+              <div className="flex-1 text-center sm:text-left">
+                <h4 className="font-bold text-text-main text-sm">Vendez 5x plus vite !</h4>
+                <p className="text-xs text-text-muted mt-0.5">Nos packs premium vous mettent en avant pour vendre plus vite.</p>
+              </div>
+              <Link 
+                href="/comment-ca-marche" 
+                className="whitespace-nowrap px-4 py-2 bg-accent text-white text-sm font-semibold rounded-lg hover:bg-accent/90 transition-colors shadow-sm"
+              >
+                Découvrir
+              </Link>
+            </div>
+
             {/* Action buttons */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
               <Link 

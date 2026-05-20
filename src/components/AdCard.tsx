@@ -33,6 +33,7 @@ export default function AdCard({
             src={image}
             alt={title}
             fill
+            unoptimized={true}
             className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
           {isPremium && (
