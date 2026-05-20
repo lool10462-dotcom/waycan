@@ -273,12 +273,18 @@ export default function PublishPage() {
                 <label className="block text-sm font-medium text-text-main mb-2">Description</label>
                 <textarea
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Décrivez votre article en détail (minimum 50 caractères)"
+                  onChange={(e) => {
+                    const words = e.target.value.trim().split(/\s+/).filter(w => w.length > 0);
+                    if (words.length <= 700) {
+                      setFormData({ ...formData, description: e.target.value })
+                    }
+                  }}
+                  placeholder="Décrivez votre article en détail (maximum 700 mots)"
                   className="input-field w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent min-h-[200px]"
-                  minLength={50}
                 />
-                <p className="text-sm text-text-muted mt-1">{formData.description.length} caractères (min. 50)</p>
+                <p className="text-sm text-text-muted mt-1">
+                  {formData.description.trim() ? formData.description.trim().split(/\s+/).filter(w => w.length > 0).length : 0}/700 mots (min. 10 mots)
+                </p>
               </div>
             </div>
           </div>
@@ -425,6 +431,10 @@ export default function PublishPage() {
                     <span className="flex items-center gap-1">
                       <Clock className="w-3.5 h-3.5" />
                       Aujourd'hui
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Eye className="w-3.5 h-3.5" />
+                      0 vues
                     </span>
                     {formData.phone && formData.showPhone && (
                       <span className="flex items-center gap-1 text-primary font-medium">
@@ -610,7 +620,10 @@ export default function PublishPage() {
             {currentStep < 5 ? (
               <button
                 onClick={handleNext}
-                disabled={currentStep === 1 && !selectedCategory}
+                disabled={
+                  (currentStep === 1 && !selectedCategory) ||
+                  (currentStep === 2 && (!formData.title || (formData.description.trim().split(/\s+/).filter(w => w.length > 0).length < 10)))
+                }
                 className="btn-primary inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white font-semibold px-6 py-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Suivant
