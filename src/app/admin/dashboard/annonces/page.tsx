@@ -230,7 +230,24 @@ export default function AdminAnnonces() {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {filteredAds.map((ad) => {
-                  const mainImg = ad.images && ad.images.length > 0 ? ad.images[0] : null
+                  let imagesArray: string[] = []
+                  if (ad.images) {
+                    if (Array.isArray(ad.images)) {
+                      imagesArray = ad.images
+                    } else if (typeof ad.images === 'string') {
+                      try {
+                        const parsed = JSON.parse(ad.images)
+                        if (Array.isArray(parsed)) {
+                          imagesArray = parsed
+                        } else {
+                          imagesArray = [ad.images]
+                        }
+                      } catch {
+                        imagesArray = [ad.images]
+                      }
+                    }
+                  }
+                  const mainImg = imagesArray.length > 0 ? imagesArray[0] : null
                   return (
                     <tr key={ad.id} className="hover:bg-neutral/20 transition-colors">
                       <td className="px-6 py-4">

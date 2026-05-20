@@ -110,13 +110,33 @@ export default function FeaturedAds() {
               const isPremiumActive = ad.is_premium && 
                 (!ad.premium_expires_at || new Date(ad.premium_expires_at) > new Date())
 
+              // Extraction sécurisée des images (Support chaîne JSON ou tableau natif)
+              let imagesArray: string[] = []
+              if (ad.images) {
+                if (Array.isArray(ad.images)) {
+                  imagesArray = ad.images
+                } else if (typeof ad.images === 'string') {
+                  try {
+                    const parsed = JSON.parse(ad.images)
+                    if (Array.isArray(parsed)) {
+                      imagesArray = parsed
+                    } else {
+                      imagesArray = [ad.images]
+                    }
+                  } catch {
+                    imagesArray = [ad.images]
+                  }
+                }
+              }
+              const mainImage = imagesArray.length > 0 ? imagesArray[0] : 'https://placehold.co/600x400?text=Pas+d%27image'
+
               return (
                 <AdCard
                   key={ad.id}
                   id={ad.id}
                   title={ad.title}
                   price={ad.price ? ad.price.toString() : 'Sur demande'}
-                  image={ad.images && ad.images.length > 0 ? ad.images[0] : 'https://placehold.co/600x400?text=Pas+d%27image'}
+                  image={mainImage}
                   location={ad.location || 'Djibouti'}
                   date="Récent"
                   views={Math.floor(Math.random() * 100) + 10}
