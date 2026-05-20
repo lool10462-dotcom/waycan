@@ -28,7 +28,17 @@ export default function LoginPage() {
 
       if (error) throw error
 
-      router.push('/')
+      // Retrieve dynamic checkout parameters
+      const params = new URLSearchParams(window.location.search)
+      const redirectUrl = params.get('redirect') || '/'
+      const plan = params.get('plan')
+      const price = params.get('price')
+
+      if (plan && price) {
+        router.push(`${redirectUrl}?plan=${plan}&price=${price}`)
+      } else {
+        router.push(redirectUrl)
+      }
     } catch (err: any) {
       setErrorMsg(err.message || "Email ou mot de passe incorrect.")
     } finally {

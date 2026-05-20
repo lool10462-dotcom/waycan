@@ -41,6 +41,22 @@ export default function AnnoncesPage() {
   const [premiumOnly, setPremiumOnly] = useState(false)
   const [sort, setSort] = useState('recent')
 
+  // Category Specific States
+  // Véhicules
+  const [vehicleBrand, setVehicleBrand] = useState('all')
+  const [vehicleGearbox, setVehicleGearbox] = useState('all')
+  const [vehicleFuel, setVehicleFuel] = useState('all')
+  // Immobilier
+  const [realEstateType, setRealEstateType] = useState('all')
+  const [realEstateRooms, setRealEstateRooms] = useState('all')
+  const [realEstateFurnished, setRealEstateFurnished] = useState('all')
+  // Électronique
+  const [elecBrand, setElecBrand] = useState('all')
+  const [elecCondition, setElecCondition] = useState('all')
+  // Emplois
+  const [jobContract, setJobContract] = useState('all')
+  const [jobExperience, setJobExperience] = useState('all')
+
   // Fetch ads from Supabase
   useEffect(() => {
     const fetchAllAds = async () => {
@@ -83,19 +99,20 @@ export default function AnnoncesPage() {
               views: ad.views || 0,
               isPremium: ad.is_premium || false,
               category: ad.category || 'Général',
+              description: ad.description || '',
               created_at: ad.created_at
             }
           })
 
           // Combine database ads + fallback if empty, to ensure something is always displayed
-          setAds(mapped.length > 0 ? mapped : staticFallbackAds.map(ad => ({ ...ad, rawPrice: parseFloat(ad.price.replace(/,/g, '')) })))
+          setAds(mapped.length > 0 ? mapped : staticFallbackAds.map(ad => ({ ...ad, rawPrice: parseFloat(ad.price.replace(/,/g, '')), description: ad.title })))
         } else {
           // Fallback to mock ads
-          setAds(staticFallbackAds.map(ad => ({ ...ad, rawPrice: parseFloat(ad.price.replace(/,/g, '')) })))
+          setAds(staticFallbackAds.map(ad => ({ ...ad, rawPrice: parseFloat(ad.price.replace(/,/g, '')), description: ad.title })))
         }
       } catch (err) {
         console.error(err)
-        setAds(staticFallbackAds.map(ad => ({ ...ad, rawPrice: parseFloat(ad.price.replace(/,/g, '')) })))
+        setAds(staticFallbackAds.map(ad => ({ ...ad, rawPrice: parseFloat(ad.price.replace(/,/g, '')), description: ad.title })))
       } finally {
         setLoading(false)
       }
@@ -108,9 +125,12 @@ export default function AnnoncesPage() {
   useEffect(() => {
     let result = [...ads]
 
-    // 1. Search filter (case-insensitive on Title)
+    // 1. Search filter (case-insensitive on Title and Description)
     if (search.trim()) {
-      result = result.filter(ad => ad.title.toLowerCase().includes(search.toLowerCase()))
+      result = result.filter(ad => 
+        ad.title.toLowerCase().includes(search.toLowerCase()) || 
+        ad.description?.toLowerCase().includes(search.toLowerCase())
+      )
     }
 
     // 2. Category filter
@@ -138,6 +158,88 @@ export default function AnnoncesPage() {
       result = result.filter(ad => ad.isPremium === true)
     }
 
+    // --- CATEGORY SPECIFIC SMART FILTERS ---
+    if (category === 'vehicules') {
+      // Brand
+      if (vehicleBrand !== 'all') {
+        result = result.filter(ad => 
+          ad.title.toLowerCase().includes(vehicleBrand.toLowerCase()) || 
+          ad.description?.toLowerCase().includes(vehicleBrand.toLowerCase())
+        )
+      }
+      // Gearbox
+      if (vehicleGearbox !== 'all') {
+        const query = vehicleGearbox === 'automatique' ? ['automatique', 'auto', 'bva'] : ['manuelle', 'manuel', 'bvm']
+        result = result.filter(ad => 
+          query.some(q => ad.title.toLowerCase().includes(q) || ad.description?.toLowerCase().includes(q))
+        )
+      }
+      // Fuel
+      if (vehicleFuel !== 'all') {
+        result = result.filter(ad => 
+          ad.title.toLowerCase().includes(vehicleFuel.toLowerCase()) || 
+          ad.description?.toLowerCase().includes(vehicleFuel.toLowerCase())
+        )
+      }
+    } else if (category === 'immobilier') {
+      // Property Type
+      if (realEstateType !== 'all') {
+        const query = realEstateType === 'appartement' ? ['appartement', 'apprt', 'studio', 'f3', 'f4'] : [realEstateType]
+        result = result.filter(ad => 
+          query.some(q => ad.title.toLowerCase().includes(q) || ad.description?.toLowerCase().includes(q))
+        )
+      }
+      // Rooms
+      if (realEstateRooms !== 'all') {
+        const query = realEstateRooms === '5' ? ['5 pieces', '5 pièces', 'f5', '5 chambres'] : [`${realEstateRooms} pieces`, `${realEstateRooms} pièces`, `f${realEstateRooms}`, `${realEstateRooms} chambres`]
+        result = result.filter(ad => 
+          query.some(q => ad.title.toLowerCase().includes(q) || ad.description?.toLowerCase().includes(q))
+        )
+      }
+      // Furnished
+      if (realEstateFurnished !== 'all') {
+        const matchesFurnished = realEstateFurnished === 'oui'
+        result = result.filter(ad => {
+          const text = (ad.title + ' ' + (ad.description || '')).toLowerCase()
+          if (matchesFurnished) {
+            return text.includes('meublé') || text.includes('meuble')
+          } else {
+            return text.includes('non meublé') || text.includes('non meuble') || text.includes('vide')
+          }
+        })
+      }
+    } else if (category === 'electronique') {
+      // Brand
+      if (elecBrand !== 'all') {
+        result = result.filter(ad => 
+          ad.title.toLowerCase().includes(elecBrand.toLowerCase()) || 
+          ad.description?.toLowerCase().includes(elecBrand.toLowerCase())
+        )
+      }
+      // Condition
+      if (elecCondition !== 'all') {
+        result = result.filter(ad => 
+          ad.title.toLowerCase().includes(elecCondition.toLowerCase()) || 
+          ad.description?.toLowerCase().includes(elecCondition.toLowerCase())
+        )
+      }
+    } else if (category === 'emploi') {
+      // Contract
+      if (jobContract !== 'all') {
+        result = result.filter(ad => 
+          ad.title.toLowerCase().includes(jobContract.toLowerCase()) || 
+          ad.description?.toLowerCase().includes(jobContract.toLowerCase())
+        )
+      }
+      // Experience
+      if (jobExperience !== 'all') {
+        result = result.filter(ad => 
+          ad.title.toLowerCase().includes(jobExperience.toLowerCase()) || 
+          ad.description?.toLowerCase().includes(jobExperience.toLowerCase())
+        )
+      }
+    }
+
     // 7. Sort
     if (sort === 'recent') {
       result.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
@@ -150,7 +252,13 @@ export default function AnnoncesPage() {
     }
 
     setFilteredAds(result)
-  }, [search, category, location, minPrice, maxPrice, premiumOnly, sort, ads])
+  }, [
+    search, category, location, minPrice, maxPrice, premiumOnly, sort, ads,
+    vehicleBrand, vehicleGearbox, vehicleFuel,
+    realEstateType, realEstateRooms, realEstateFurnished,
+    elecBrand, elecCondition,
+    jobContract, jobExperience
+  ])
 
   const handleResetFilters = () => {
     setSearch('')
@@ -160,6 +268,17 @@ export default function AnnoncesPage() {
     setMaxPrice('')
     setPremiumOnly(false)
     setSort('recent')
+    // Reset specific categories
+    setVehicleBrand('all')
+    setVehicleGearbox('all')
+    setVehicleFuel('all')
+    setRealEstateType('all')
+    setRealEstateRooms('all')
+    setRealEstateFurnished('all')
+    setElecBrand('all')
+    setElecCondition('all')
+    setJobContract('all')
+    setJobExperience('all')
   }
 
   return (
@@ -234,6 +353,188 @@ export default function AnnoncesPage() {
                     ))}
                   </select>
                 </div>
+
+                {/* --- FILTRES SPECIFIQUES PAR CATEGORIE (ANIMATIONS DYNAMIQUES) --- */}
+                {category === 'vehicules' && (
+                  <div className="space-y-4 p-3 bg-neutral/40 border border-gray-100 rounded-xl animate-in slide-in-from-top duration-300">
+                    <h4 className="text-xs font-black text-primary uppercase tracking-wider border-b pb-1 mb-2">🚗 Spécifications Véhicule</h4>
+                    
+                    <div>
+                      <label className="block text-[10px] font-bold text-text-muted uppercase tracking-wider mb-1">Marque</label>
+                      <select 
+                        value={vehicleBrand} 
+                        onChange={(e) => setVehicleBrand(e.target.value)}
+                        className="w-full px-2.5 py-1.5 border border-gray-200 rounded-lg bg-white focus:ring-2 focus:ring-accent text-xs"
+                      >
+                        <option value="all">Toutes</option>
+                        <option value="toyota">Toyota</option>
+                        <option value="nissan">Nissan</option>
+                        <option value="peugeot">Peugeot</option>
+                        <option value="hyundai">Hyundai</option>
+                        <option value="suzuki">Suzuki</option>
+                        <option value="mercedes">Mercedes</option>
+                        <option value="bmw">BMW</option>
+                        <option value="audi">Audi</option>
+                        <option value="kia">Kia</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold text-text-muted uppercase tracking-wider mb-1">Boîte de vitesse</label>
+                      <select 
+                        value={vehicleGearbox} 
+                        onChange={(e) => setVehicleGearbox(e.target.value)}
+                        className="w-full px-2.5 py-1.5 border border-gray-200 rounded-lg bg-white focus:ring-2 focus:ring-accent text-xs"
+                      >
+                        <option value="all">Toutes</option>
+                        <option value="manuelle">Manuelle</option>
+                        <option value="automatique">Automatique</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold text-text-muted uppercase tracking-wider mb-1">Énergie</label>
+                      <select 
+                        value={vehicleFuel} 
+                        onChange={(e) => setVehicleFuel(e.target.value)}
+                        className="w-full px-2.5 py-1.5 border border-gray-200 rounded-lg bg-white focus:ring-2 focus:ring-accent text-xs"
+                      >
+                        <option value="all">Toutes</option>
+                        <option value="essence">Essence</option>
+                        <option value="diesel">Diesel</option>
+                        <option value="hybride">Hybride</option>
+                        <option value="electrique">Électrique</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
+
+                {category === 'immobilier' && (
+                  <div className="space-y-4 p-3 bg-neutral/40 border border-gray-100 rounded-xl animate-in slide-in-from-top duration-300">
+                    <h4 className="text-xs font-black text-primary uppercase tracking-wider border-b pb-1 mb-2">🏢 Spécifications Immobilier</h4>
+                    
+                    <div>
+                      <label className="block text-[10px] font-bold text-text-muted uppercase tracking-wider mb-1">Type de bien</label>
+                      <select 
+                        value={realEstateType} 
+                        onChange={(e) => setRealEstateType(e.target.value)}
+                        className="w-full px-2.5 py-1.5 border border-gray-200 rounded-lg bg-white focus:ring-2 focus:ring-accent text-xs"
+                      >
+                        <option value="all">Tous</option>
+                        <option value="appartement">Appartement</option>
+                        <option value="villa">Villa</option>
+                        <option value="maison">Maison</option>
+                        <option value="terrain">Terrain</option>
+                        <option value="bureau">Bureau</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold text-text-muted uppercase tracking-wider mb-1">Nombre de pièces</label>
+                      <select 
+                        value={realEstateRooms} 
+                        onChange={(e) => setRealEstateRooms(e.target.value)}
+                        className="w-full px-2.5 py-1.5 border border-gray-200 rounded-lg bg-white focus:ring-2 focus:ring-accent text-xs"
+                      >
+                        <option value="all">Tous</option>
+                        <option value="1">1 pièce (Studio)</option>
+                        <option value="2">2 pièces</option>
+                        <option value="3">3 pièces</option>
+                        <option value="4">4 pièces</option>
+                        <option value="5">5 pièces ou +</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold text-text-muted uppercase tracking-wider mb-1">Meublé</label>
+                      <select 
+                        value={realEstateFurnished} 
+                        onChange={(e) => setRealEstateFurnished(e.target.value)}
+                        className="w-full px-2.5 py-1.5 border border-gray-200 rounded-lg bg-white focus:ring-2 focus:ring-accent text-xs"
+                      >
+                        <option value="all">Tous</option>
+                        <option value="oui">Oui (Meublé)</option>
+                        <option value="non">Non meublé</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
+
+                {category === 'electronique' && (
+                  <div className="space-y-4 p-3 bg-neutral/40 border border-gray-100 rounded-xl animate-in slide-in-from-top duration-300">
+                    <h4 className="text-xs font-black text-primary uppercase tracking-wider border-b pb-1 mb-2">📱 Spécifications Électronique</h4>
+                    
+                    <div>
+                      <label className="block text-[10px] font-bold text-text-muted uppercase tracking-wider mb-1">Marque</label>
+                      <select 
+                        value={elecBrand} 
+                        onChange={(e) => setElecBrand(e.target.value)}
+                        className="w-full px-2.5 py-1.5 border border-gray-200 rounded-lg bg-white focus:ring-2 focus:ring-accent text-xs"
+                      >
+                        <option value="all">Toutes</option>
+                        <option value="apple">Apple (iPhone, Mac)</option>
+                        <option value="samsung">Samsung</option>
+                        <option value="huawei">Huawei</option>
+                        <option value="xiaomi">Xiaomi</option>
+                        <option value="sony">Sony</option>
+                        <option value="hp">HP</option>
+                        <option value="dell">Dell</option>
+                        <option value="lenovo">Lenovo</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold text-text-muted uppercase tracking-wider mb-1">État</label>
+                      <select 
+                        value={elecCondition} 
+                        onChange={(e) => setElecCondition(e.target.value)}
+                        className="w-full px-2.5 py-1.5 border border-gray-200 rounded-lg bg-white focus:ring-2 focus:ring-accent text-xs"
+                      >
+                        <option value="all">Tous</option>
+                        <option value="neuf">Neuf</option>
+                        <option value="comme neuf">Comme neuf</option>
+                        <option value="bon">Bon état</option>
+                        <option value="reparer">À réparer</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
+
+                {category === 'emploi' && (
+                  <div className="space-y-4 p-3 bg-neutral/40 border border-gray-100 rounded-xl animate-in slide-in-from-top duration-300">
+                    <h4 className="text-xs font-black text-primary uppercase tracking-wider border-b pb-1 mb-2">💼 Spécifications Emploi</h4>
+                    
+                    <div>
+                      <label className="block text-[10px] font-bold text-text-muted uppercase tracking-wider mb-1">Contrat</label>
+                      <select 
+                        value={jobContract} 
+                        onChange={(e) => setJobContract(e.target.value)}
+                        className="w-full px-2.5 py-1.5 border border-gray-200 rounded-lg bg-white focus:ring-2 focus:ring-accent text-xs"
+                      >
+                        <option value="all">Tous</option>
+                        <option value="cdi">CDI</option>
+                        <option value="cdd">CDD</option>
+                        <option value="stage">Stage</option>
+                        <option value="freelance">Freelance</option>
+                        <option value="interim">Intérim</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold text-text-muted uppercase tracking-wider mb-1">Expérience</label>
+                      <select 
+                        value={jobExperience} 
+                        onChange={(e) => setJobExperience(e.target.value)}
+                        className="w-full px-2.5 py-1.5 border border-gray-200 rounded-lg bg-white focus:ring-2 focus:ring-accent text-xs"
+                      >
+                        <option value="all">Toutes</option>
+                        <option value="debutant">Débutant (0-1 an)</option>
+                        <option value="intermediaire">Intermédiaire (1-3 ans)</option>
+                        <option value="senior">Senior (5 ans +)</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
 
                 {/* Price range */}
                 <div className="space-y-2">

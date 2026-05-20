@@ -2,7 +2,9 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Check, Star, Phone, MessageCircle, CreditCard, X, ChevronRight, Shield, Calendar, CheckCircle } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 
 interface Pack {
   id: number
@@ -17,34 +19,35 @@ interface Pack {
 const packs: Pack[] = [
   {
     id: 1,
-    name: 'Basic',
+    name: 'Silver',
     price: 2900,
     period: 'semaine',
-    description: 'Pour une visibilité rapide',
-    features: ['Annonce en tête de liste', 'Badge Premium visible', '7 jours de visibilité boostée'],
+    description: 'Pour une visibilité intermédiaire efficace',
+    features: ['Annonce en tête de liste', 'Badge Silver visible', '7 jours de visibilité boostée', 'Priorité de recherche élevée'],
     popular: false,
   },
   {
     id: 2,
-    name: 'Pro',
+    name: 'Gold',
     price: 4500,
     period: 'semaine',
-    description: 'Le plus populaire',
-    features: ['Position prioritaire', 'Badge Premium + couleur', '30 jours de visibilité', 'Partage réseaux sociaux'],
+    description: 'Le choix favori de nos vendeurs',
+    features: ['Position prioritaire très haute', 'Badge Gold + Couleur Or', '15 jours de visibilité', 'Partage réseaux sociaux', 'Placement en page d\'accueil'],
     popular: true,
   },
   {
     id: 3,
-    name: 'Business',
+    name: 'VIP',
     price: 7500,
     period: 'semaine',
-    description: 'Pour les professionnels',
-    features: ['Boutique dédiée', '10 annonces premium', 'Analytics dashboard', 'Support prioritaire WhatsApp'],
+    description: 'La visibilité maximale absolue',
+    features: ['Boutique dédiée incluse', 'Priorité VIP absolue en recherche', '30 jours de visibilité', 'Badge VIP Premium étincelant', 'Support prioritaire WhatsApp 24/7', 'Placement permanent en vedette'],
     popular: false,
   }
 ]
 
 export default function SubscribePage() {
+  const router = useRouter()
   const [selectedPack, setSelectedPack] = useState<Pack | null>(null)
   const [showPaymentModal, setShowPaymentModal] = useState(false)
   const [paymentStep, setPaymentStep] = useState(1)
@@ -55,10 +58,16 @@ export default function SubscribePage() {
     paymentMethod: 'whatsapp'
   })
 
-  const handleSelectPack = (pack: Pack) => {
-    setSelectedPack(pack)
-    setShowPaymentModal(true)
-    setPaymentStep(1)
+  const handleSelectPack = async (pack: Pack) => {
+    // 1. Session check to make the website ultra professional
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) {
+      // Securely redirect to login page with state parameters
+      router.push(`/connexion?redirect=/paiement&plan=${pack.name}&price=${pack.price}`)
+    } else {
+      // Already logged in! Redirect to the newly active manual Waafi payment screen
+      router.push(`/paiement?plan=${pack.name}&price=${pack.price}`)
+    }
   }
 
   const handleSubmitPayment = () => {
