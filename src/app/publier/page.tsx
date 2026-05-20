@@ -332,18 +332,18 @@ export default function PublishPage() {
               </label>
               <div>
                 <label className="block text-sm font-medium text-text-main mb-2">Localisation</label>
-                <select
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  className="input-field w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
-                >
-                  <option value="">Sélectionnez une zone</option>
-                  <option value="djibouti-ville">Djibouti-ville</option>
-                  <option value="balbala">Balbala</option>
-                  <option value="boulevard">Boulevard</option>
-                  <option value="haramous">Haramous</option>
-                  <option value="ambouli">Ambouli</option>
-                </select>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <MapPin className="w-5 h-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    value={formData.location}
+                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                    placeholder="Ex: Djibouti-ville, Balbala, ou votre quartier..."
+                    className="input-field w-full pl-11 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent transition-all"
+                  />
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-text-main mb-2">Téléphone</label>
